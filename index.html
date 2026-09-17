@@ -12,6 +12,8 @@
     button { width: 96%; padding: 12px; border: none; border-radius: 8px; background: #0284c7; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
     button:hover { background: #0369a1; }
     #result { margin-top: 20px; }
+    .dl-btn { display: inline-block; padding: 12px 20px; background: #22c55e; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 15px; }
+    video { max-width: 100%; border-radius: 8px; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -24,22 +26,45 @@
 
   <script>
     window.onload = function() {
+      const hash = window.location.hash.substring(1);
       const params = new URLSearchParams(window.location.search);
-      const link = params.get('url') || window.location.hash.substring(1);
-      if(link) {
-        document.getElementById('url').value = link;
+      const link = hash || params.get('url');
+      if (link) {
+        document.getElementById('url').value = decodeURIComponent(link);
         downloadVideo();
       }
     };
 
-    function downloadVideo() {
+    async function downloadVideo() {
       const input = document.getElementById('url').value.trim();
       const res = document.getElementById('result');
-      if(!input) { alert('Please paste link'); return; }
-      res.innerHTML = '<p>Processing...</p>';
-      window.location.href = "https://snapinsta.to/#" + input;
+      if (!input) { alert('कृपया इंस्टाग्राम लिंक डालें'); return; }
+      
+      res.innerHTML = '<p>⏳ वीडियो फेच हो रहा है, कृपया इंतज़ार करें...</p>';
+
+      try {
+        const response = await fetch(`https://api.cobalt.tools/api/json`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ url: input })
+        });
+        const data = await response.json();
+
+        if (data && data.url) {
+          res.innerHTML = `
+            <video src="${data.url}" controls autoplay></video><br>
+            <a href="${data.url}" target="_blank" download="instagram_video.mp4" class="dl-btn">⬇️ Save Video</a>
+          `;
+        } else {
+          res.innerHTML = '<p style="color:#ef4444;">वीडियो नहीं मिला या लिंक प्राइवेट है।</p>';
+        }
+      } catch (err) {
+        res.innerHTML = '<p style="color:#ef4444;">वीडियो प्रोसेस करने में समस्या आई। पुनः प्रयास करें।</p>';
+      }
     }
   </script>
 </body>
 </html>
-
