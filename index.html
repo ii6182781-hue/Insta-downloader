@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insta Video Downloader</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 15px; box-sizing: border-box; }
+    .card { background: #1e293b; padding: 25px; border-radius: 12px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+    h2 { margin-bottom: 20px; color: #38bdf8; }
+    input { width: 90%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 14px; margin-bottom: 15px; outline: none; }
+    button { width: 96%; padding: 12px; border: none; border-radius: 8px; background: #0284c7; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
+    button:hover { background: #0369a1; }
+    #result { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Instagram Downloader</h2>
+    <input type="text" id="url" placeholder="Paste Instagram Link Here...">
+    <button onclick="downloadVideo()">Download Now</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    window.onload = function() {
+      const params = new URLSearchParams(window.location.search);
+      const link = params.get('url') || window.location.hash.substring(1);
+      if(link) {
+        document.getElementById('url').value = link;
+        downloadVideo();
+      }
+    };
+
+    function downloadVideo() {
+      const input = document.getElementById('url').value.trim();
+      const res = document.getElementById('result');
+      if(!input) { alert('Please paste link'); return; }
+      res.innerHTML = '<p>Processing...</p>';
+      window.location.href = "https://snapinsta.to/#" + input;
+    }
+  </script>
+</body>
+</html>
+
