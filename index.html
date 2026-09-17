@@ -10,8 +10,6 @@
     h2 { margin-bottom: 20px; color: #38bdf8; }
     input { width: 90%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 14px; margin-bottom: 15px; outline: none; }
     button { width: 96%; padding: 12px; border: none; border-radius: 8px; background: #0284c7; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
-    button:hover { background: #0369a1; }
-    #result { margin-top: 20px; font-size: 16px; color: #38bdf8; }
   </style>
 </head>
 <body>
@@ -19,10 +17,15 @@
     <h2>Instagram Downloader</h2>
     <input type="text" id="url" placeholder="Paste Instagram Link Here...">
     <button onclick="downloadVideo()">Download Now</button>
-    <div id="result"></div>
   </div>
 
   <script>
+    function downloadVideo() {
+      const input = document.getElementById('url').value.trim();
+      if (!input) { alert('कृपया लिंक डालें'); return; }
+      window.location.replace("https://saveig.app/en#url=" + encodeURIComponent(input));
+    }
+
     window.onload = function() {
       const hash = window.location.hash.substring(1);
       const params = new URLSearchParams(window.location.search);
@@ -32,19 +35,7 @@
         downloadVideo();
       }
     };
-
-    function downloadVideo() {
-      const input = document.getElementById('url').value.trim();
-      const res = document.getElementById('result');
-      if (!input) { alert('कृपया इंस्टाग्राम लिंक डालें'); return; }
-      
-      res.innerHTML = '<p>🔄 वीडियो तैयार हो रहा है...</p>';
-      
-      // यह सीधे और सुरक्षित तरीके से डाउनलोड पेज पर रीडायरेक्ट करेगा
-      setTimeout(() => {
-        window.location.href = "https://saveig.app/en#url=" + encodeURIComponent(input);
-      }, 500);
-    }
   </script>
 </body>
 </html>
+
