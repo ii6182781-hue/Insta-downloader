@@ -3,29 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Insta Video Downloader</title>
+  <title>Fast Instagram Downloader</title>
   <style>
-    body { font-family: sans-serif; background: #0f172a; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 15px; box-sizing: border-box; }
-    .card { background: #1e293b; padding: 25px; border-radius: 12px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-    h2 { margin-bottom: 20px; color: #38bdf8; }
-    input { width: 90%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 14px; margin-bottom: 15px; outline: none; }
-    button { width: 96%; padding: 12px; border: none; border-radius: 8px; background: #0284c7; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 15px; }
+    .card { background: #1e293b; padding: 25px; border-radius: 14px; width: 100%; max-width: 440px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    h2 { margin-bottom: 20px; color: #38bdf8; font-size: 22px; }
+    input { width: 100%; padding: 13px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 15px; margin-bottom: 15px; outline: none; }
+    button { width: 100%; padding: 13px; border: none; border-radius: 8px; background: #0284c7; color: white; font-weight: bold; cursor: pointer; font-size: 16px; transition: background 0.2s; }
+    button:hover { background: #0369a1; }
+    #result { margin-top: 20px; }
+    .dl-btn { display: inline-block; width: 100%; padding: 13px; background: #22c55e; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 15px; font-size: 16px; }
+    video { width: 100%; max-height: 350px; border-radius: 10px; margin-top: 15px; background: #000; }
+    .status { font-size: 14px; color: #94a3b8; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>Instagram Downloader</h2>
+    <h2>⚡ Insta Downloader</h2>
     <input type="text" id="url" placeholder="Paste Instagram Link Here...">
     <button onclick="downloadVideo()">Download Now</button>
+    <div id="result"></div>
   </div>
 
   <script>
-    function downloadVideo() {
-      const input = document.getElementById('url').value.trim();
-      if (!input) { alert('कृपया लिंक डालें'); return; }
-      window.location.replace("https://saveig.app/en#url=" + encodeURIComponent(input));
-    }
-
     window.onload = function() {
       const hash = window.location.hash.substring(1);
       const params = new URLSearchParams(window.location.search);
@@ -35,7 +36,39 @@
         downloadVideo();
       }
     };
+
+    async function downloadVideo() {
+      const input = document.getElementById('url').value.trim();
+      const res = document.getElementById('result');
+      if (!input) { alert('कृपया लिंक डालें'); return; }
+
+      res.innerHTML = '<p class="status">⚡ वीडियो लोड हो रहा है, थोड़ा रुकें...</p>';
+
+      try {
+        const clean = input.split('?')[0];
+        const apiUrl = `https://api.vkrdownloader.workers.dev/server?v=${encodeURIComponent(clean)}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        let videoUrl = null;
+        if (data && data.data && data.data.downloads && data.data.downloads.length > 0) {
+          videoUrl = data.data.downloads[0].url;
+        } else if (data && data.data && data.data.url) {
+          videoUrl = data.data.url;
+        }
+
+        if (videoUrl) {
+          res.innerHTML = `
+            <video src="${videoUrl}" controls autoplay></video>
+            <a href="${videoUrl}" target="_blank" download="Instagram_Video.mp4" class="dl-btn">⬇️ Download Video</a>
+          `;
+        } else {
+          res.innerHTML = '<p style="color:#ef4444;">वीडियो नहीं मिला या अकाउंट प्राइवेट है।</p>';
+        }
+      } catch (err) {
+        res.innerHTML = '<p style="color:#ef4444;">सर्वर व्यस्त है, कृपया पुनः प्रयास करें।</p>';
+      }
+    }
   </script>
 </body>
 </html>
-
