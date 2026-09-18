@@ -37,36 +37,62 @@
       }
     };
 
+    async function fetchFromSource(apiUrl) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      try {
+        const res = await fetch(apiUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        return await res.json();
+      } catch (e) {
+        return null;
+      }
+    }
+
     async function downloadVideo() {
       const input = document.getElementById('url').value.trim();
       const res = document.getElementById('result');
       if (!input) { alert('कृपया लिंक डालें'); return; }
 
-      res.innerHTML = '<p class="status">⚡ वीडियो लोड हो रहा है, थोड़ा रुकें...</p>';
+      res.innerHTML = '<p class="status">⚡ वीडियो फेच हो रहा है, थोड़ा इंतज़ार करें...</p>';
 
+      const clean = input.split('?')[0].replace(/\/$/, '');
+      let videoUrl = null;
+
+      // इंजन 1: डायरेक्ट फास्ट एपीआई
       try {
-        const clean = input.split('?')[0];
-        const apiUrl = `https://api.vkrdownloader.workers.dev/server?v=${encodeURIComponent(clean)}`;
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-
-        let videoUrl = null;
-        if (data && data.data && data.data.downloads && data.data.downloads.length > 0) {
-          videoUrl = data.data.downloads[0].url;
-        } else if (data && data.data && data.data.url) {
-          videoUrl = data.data.url;
+        const data1 = await fetchFromSource(`https://api.vkrdownloader.workers.dev/server?v=${encodeURIComponent(clean)}`);
+        if (data1 && data1.data) {
+          if (data1.data.downloads && data1.data.downloads.length > 0) {
+            videoUrl = data1.data.downloads[0].url;
+          } else if (data1.data.url) {
+            videoUrl = data1.data.url;
+          }
         }
+      } catch (e) {}
 
-        if (videoUrl) {
-          res.innerHTML = `
-            <video src="${videoUrl}" controls autoplay></video>
-            <a href="${videoUrl}" target="_blank" download="Instagram_Video.mp4" class="dl-btn">⬇️ Download Video</a>
-          `;
-        } else {
-          res.innerHTML = '<p style="color:#ef4444;">वीडियो नहीं मिला या अकाउंट प्राइवेट है।</p>';
-        }
-      } catch (err) {
-        res.innerHTML = '<p style="color:#ef4444;">सर्वर व्यस्त है, कृपया पुनः प्रयास करें।</p>';
+      // इंजन 2: बैकअप एपीआई (यदि पहला व्यस्त हो)
+      if (!videoUrl) {
+        try {
+          const data2 = await fetchFromSource(`https://instavideosave.net/api/convert?url=${encodeURIComponent(clean)}`);
+          if (data2 && data2.url && data2.url.length > 0) {
+            videoUrl = data2.url[0].url;
+          }
+        } catch (e) {}
+      }
+
+      // परिणाम दिखाना
+      if (videoUrl) {
+        res.innerHTML = `
+          <video src="${videoUrl}" controls autoplay playsinline></video>
+          <a href="${videoUrl}" target="_blank" download="Instagram_Video.mp4" class="dl-btn">⬇️ Download Video</a>
+        `;
+      } else {
+        // यदि दोनों बैकएंड डायरेक्ट लिंक देने से चूकें तो सुरक्षित इनलाइन डाउनलोडर
+        res.innerHTML = `
+          <p style="color:#f59e0b; margin-bottom: 10px;">सीधा लिंक नहीं मिला, नीचे बटन दबाकर तुरंत डाउनलोड करें:</p>
+          <a href="https://saveig.app/en#url=${encodeURIComponent(clean)}" target="_blank" class="dl-btn">🚀 Instant Download</a>
+        `;
       }
     }
   </script>
