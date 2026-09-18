@@ -6,15 +6,14 @@
   <title>Fast Instagram Downloader</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 15px; }
+    body { font-family: sans-serif; background: #0f172a; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 15px; }
     .card { background: #1e293b; padding: 25px; border-radius: 14px; width: 100%; max-width: 440px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
     h2 { margin-bottom: 20px; color: #38bdf8; font-size: 22px; }
     input { width: 100%; padding: 13px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 15px; margin-bottom: 15px; outline: none; }
-    button { width: 100%; padding: 13px; border: none; border-radius: 8px; background: #0284c7; color: white; font-weight: bold; cursor: pointer; font-size: 16px; transition: background 0.2s; }
+    button { width: 100%; padding: 13px; border: none; border-radius: 8px; background: #0284c7; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
     button:hover { background: #0369a1; }
     #result { margin-top: 20px; }
     .dl-btn { display: inline-block; width: 100%; padding: 14px; background: #22c55e; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 15px; font-size: 16px; text-align: center; }
-    .status { font-size: 15px; color: #38bdf8; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -41,17 +40,12 @@
       const res = document.getElementById('result');
       if (!input) { alert('कृपया इंस्टाग्राम लिंक डालें'); return; }
 
-      res.innerHTML = '<p class="status">⚡ वीडियो तैयार हो रहा है...</p>';
-
       const cleanUrl = input.split('?')[0].replace(/\/$/, '');
 
-      // सीधा सुपरफ़ास्ट डाउनलोड इंजन जो कभी फेल नहीं होता
-      setTimeout(() => {
-        res.innerHTML = `
-          <p style="color:#22c55e; font-weight:bold;">रील तैयार है!</p>
-          <a href="https://saveig.app/en#url=${encodeURIComponent(cleanUrl)}" target="_blank" class="dl-btn">⬇️ Download MP4 Now</a>
-        `;
-      }, 400);
+      res.innerHTML = `
+        <p style="color:#38bdf8; font-weight:bold; margin-bottom:10px;">रील प्रोसेस हो गई है!</p>
+        <a href="https://saveig.app/en#url=${encodeURIComponent(cleanUrl)}" target="_blank" class="dl-btn">⬇️ Download Video (MP4)</a>
+      `;
     }
   </script>
 </body>
